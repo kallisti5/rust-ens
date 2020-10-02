@@ -12,6 +12,7 @@ readme = "README.md"
 edition = "2018"
 
 [dependencies]
+tokio = { version = "0.2", features = ["macros", "tcp"] }
 web3 = "0.13"
 tiny-keccak = "1.4.2"
 lazy_static = "1.0"

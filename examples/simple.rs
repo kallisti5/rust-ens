@@ -1,22 +1,22 @@
 extern crate ens;
 extern crate web3;
+extern crate tokio;
 
 use web3::types::Address;
 use ens::ENS;
 
-fn main() {
-    let (_evloop, transport) = web3::transports::Http::new(
+#[tokio::main]
+async fn main() {
+    let transport = web3::transports::http::Http::new(
         "http://localhost:8545",
     ).unwrap();
 
-    let ens_name = "hexacosa.eth";
+    let ens_name = "terarocket.eth";
 
     let ens = ENS::new(web3::Web3::new(transport));
-    let addr = {
-        match ens.address(ens_name) {
-            Ok(addr) => addr,
-            Err(_) => Address::new(),
-        }
+    let addr = match ens.address(ens_name) {
+        Ok(a) => a,
+        Err(_) => Address::zero(),
     };
     let owner_addr = {
         ens.owner(ens_name).expect("ens.owner() error")
