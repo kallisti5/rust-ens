@@ -5,7 +5,8 @@ extern crate tiny_keccak;
 
 use web3::contract::{Contract, Options};
 use web3::types::{Address, H256};
-use web3::futures::Future;
+use futures::executor::block_on;
+
 use tiny_keccak::Keccak;
 
 const ENS_MAINNET_ADDR: &str = "314159265dD8dbb310642f98f50C066173C1259b";
@@ -30,7 +31,7 @@ impl<T: web3::Transport> Resolver<T> {
     fn new(ens: &ENS<T>, resolver_addr: &str) -> Self {
         let addr_namehash = H256::from_slice(namehash(resolver_addr).as_slice());
         let result = ens.contract.query("resolver", (addr_namehash, ), None, Options::default(), None);
-        let resolver_addr: Address = result.wait().expect("resolver.result.wait()");
+        let resolver_addr: Address = block_on(result).unwrap();
 
         // resolve
         let resolver_contract = Contract::from_json(
@@ -46,18 +47,18 @@ impl<T: web3::Transport> Resolver<T> {
     fn address(self, name: &str) -> Result<Address, String> {
         let name_namehash = H256::from_slice(namehash(name).as_slice());
         let result = self.contract.query("addr", (name_namehash, ), None, Options::default(), None);
-        match result.wait() {
+        match block_on(result) {
             Ok(s) => Ok(s),
-            Err(e) => Err(format!("error: name.result.wait(): {:?}", e)),
+            Err(e) => Err(format!("error: name.result: {:?}", e)),
         }
     }
 
     fn name(self, resolver_addr: &str) -> Result<String, String> {
         let addr_namehash = H256::from_slice(namehash(resolver_addr).as_slice());
         let result = self.contract.query("name", (addr_namehash, ), None, Options::default(), None);
-        match result.wait() {
+        match block_on(result) {
             Ok(s) => Ok(s),
-            Err(e) => Err(format!("error: name.result.wait(): {:?}", e)),
+            Err(e) => Err(format!("error: name.result: {:?}", e)),
         }
     }
 }
@@ -91,9 +92,9 @@ impl<T: web3::Transport> ENS<T> {
     pub fn owner(&self, name: &str) -> Result<Address, String> {
         let ens_namehash = H256::from_slice(namehash(name).as_slice());
         let result = self.contract.query("owner", (ens_namehash, ), None, Options::default(), None);
-        match result.wait() {
+        match block_on(result) {
             Ok(s) => Ok(s),
-            Err(e) => Err(format!("error: owner.result.wait(): {:?}", e)),
+            Err(e) => Err(format!("error: owner.result: {:?}", e)),
         }
     }
 

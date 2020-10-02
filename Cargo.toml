@@ -9,8 +9,10 @@ homepage = "https://github.com/hhatto/rust-ens"
 repository = "https://github.com/hhatto/rust-ens"
 license = "MIT"
 readme = "README.md"
+edition = "2018"
 
 [dependencies]
-web3 = "0.3.1"
+web3 = "0.13"
 tiny-keccak = "1.4.2"
 lazy_static = "1.0"
+futures = "0.3"

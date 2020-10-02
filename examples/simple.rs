@@ -4,7 +4,6 @@ extern crate web3;
 use web3::types::Address;
 use ens::ENS;
 
-
 fn main() {
     let (_evloop, transport) = web3::transports::Http::new(
         "http://localhost:8545",
